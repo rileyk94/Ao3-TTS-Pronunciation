@@ -1,5 +1,12 @@
-import tkinter as tk
+import os
+path = "C:/Users/rkyz9/coding/repos/Ao3-TTS-Pronunciation/original"
+fic_list = os.listdir(path)
 
-root = tk.Tk()
+file_num = 1
+for fic in fic_list:
+    print(f"{file_num}. {fic}")
+    file_num +=1
 
-root.mainloop()
+# file_selected = false
+# while file_selected == false:
+    
