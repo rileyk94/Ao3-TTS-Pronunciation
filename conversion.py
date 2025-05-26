@@ -15,4 +15,5 @@ while file_selected == False:
         file_selected = True
     else:
         print("please try again")
-print(file)
+
+
