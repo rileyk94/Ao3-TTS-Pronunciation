@@ -1,20 +1,21 @@
 import os
 import pandas as pd
 import csv
+import re
 
 #create file paths
 original_fic_path = "C:/Users/rkyz9/coding/repos/Ao3-TTS-Pronunciation/original"
 fandom_excel_path = "C:/Users/rkyz9/coding/repos/Ao3-TTS-Pronunciation/fandom_xlsx"
 fandom_csv_path = "C:/Users/rkyz9/coding/repos/Ao3-TTS-Pronunciation/fandom_csvs"
-fandom_output_path = "C:/Users/rkyz9/coding/repos/Ao3-TTS-Pronunciation/fic"
+fandom_output_path = "C:/Users/rkyz9/coding/repos/Ao3-TTS-Pronunciation/fics"
 
 #create lists of file names
 fic_list = os.listdir(original_fic_path)
 fandom_excel_list = os.listdir(fandom_excel_path)
-fandom_csv_list = os.listdir(fandom_excel_path)
+fandom_csv_list = os.listdir(fandom_csv_path)
 file_name_list = []
 fandom_list = ["Naruto", "Harry Potter", "Star Wars", "Buffy the Vampire Slayer",
-    "Fire Emblem: Three Houses"]
+    "Fire Emblem: Three Houses", "Custom"]
 #function to convert excel to csv
 def excel_to_csv(filename: str):
     input_path = f"{fandom_excel_path}/{filename}.xlsx"
@@ -27,7 +28,7 @@ def excel_to_csv(filename: str):
 for file in fandom_excel_list:
     file = file.split('.')
     file_name_list.append(file[0])
-print
+
 #check to see if there is a csv file for all excel files
 for file in file_name_list:
     expected_csv = f"{file}.csv"
@@ -42,12 +43,12 @@ for fic in fic_list:
     file_num +=1
 
 file_selected = False
-file = ""
+fic = ""
 while file_selected == False:
     choose = int(input("Please select the file number of the file you wish to be converted: "))
     if choose > 0 and choose <= len(fic_list):
-        file = fic_list[choose-1]
-        print(file+"\n")
+        fic = fic_list[choose-1]
+        print(fic+"\n")
         file_selected = True
     else:
         print("please try again")
@@ -63,7 +64,7 @@ while fandoms_selected == False:
         "Please type the name of the fandom you want to use. Type done when finished \n")
     if user_choice.lower() == "done":
         print(fandoms)
-        fandoms_selected == True
+        fandoms_selected = True
         break
     for i in fandom_list:
         name = i.lower()
@@ -79,6 +80,7 @@ Harry_Potter = []
 BtVS = []
 Star_Wars = []
 Three_Houses = []
+Custom = []
 
 for file in fandom_csv_list:
     check = file.lower()
@@ -92,6 +94,8 @@ for file in fandom_csv_list:
         Star_Wars.append(file)
     if "three_houses" in check:
         Three_Houses.append(file)
+    if "custom" in check:
+        Custom.append(file)
 
 #function to convert csv file to dictionary
 def csv_to_dict(file_name: str, converter: dict):
@@ -110,17 +114,33 @@ for fandom in fandoms:
     if fandom.lower() == "naruto":
         for file in Naruto:
             csv_to_dict(file, conversions)
-    else if fandom.lower() == "harry potter":
-        for file in Naruto:
+    elif fandom.lower() == "harry potter":
+        for file in Harry_Potter:
             csv_to_dict(file, conversions)
-    else if fandom.lower() == "star wars":
-        for file in Naruto:
+    elif fandom.lower() == "star wars":
+        for file in Star_Wars:
             csv_to_dict(file, conversions)
-    else if fandom.lower() == "buffy the vampire slayer":
-        for file in Naruto:
+    elif fandom.lower() == "buffy the vampire slayer":
+        for file in BtVS:
             csv_to_dict(file, conversions)
-    else if fandom.lower() == "fire emblem: three houses":
-        for file in Naruto:
+    elif fandom.lower() == "fire emblem: three houses":
+        for file in Three_Houses:
+            csv_to_dict(file, conversions)
+    elif fandom.lower() == "custom":
+        for file in Custom:
             csv_to_dict(file, conversions)
 
+
+with open (f"{original_fic_path}/{fic}", "r",encoding="utf-8") as my_file:
+    original_text = my_file.read()
+
+new_text = original_text
+
+for original, replacement in conversions.items():
+    pattern = r"\b" + re.escape(original) + r'\b'
+    new_text = re.sub(pattern,replacement, new_text, flags=re.IGNORECASE)
+
+
+with open(f"{fandom_output_path}/new_{fic}", "w",encoding="utf-8") as new:
+    new.write(new_text)
 
